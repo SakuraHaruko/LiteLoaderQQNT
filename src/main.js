@@ -15,7 +15,10 @@ for (const plugin of Object.values(LiteLoader.plugins)) {
     catch (error) { console.log(`[Main] [${plugin.manifest.slug}]: `, error); }
 }
 
-if (!globalThis.qwqnt) {
+// macOS QQ 7.x: an external launcher (launcher.node) preloads LiteLoader before QQ's
+// own main entry. In that case QQ's main is already scheduled by the host, so do not
+// require the legacy app_launcher entry again.
+if (!globalThis.qwqnt && !globalThis.__LITELOADER_PRELOAD__) {
     const main_path = "./application.asar/app_launcher/index.js";
     require(require("path").join(process.resourcesPath, "app", main_path));
     setImmediate(() => global.launcher.installPathPkgJson.main = main_path);
